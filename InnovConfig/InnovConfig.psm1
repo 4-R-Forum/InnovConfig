@@ -31,6 +31,45 @@ $InnovConfigSession['libs_dll_loc'] = Resolve-Path './tools/ConsoleUpgrade/Libs.
 $InnovConfigSession['export_folder'] = Resolve-Path './Temp/Export/'
 Add-Type -AssemblyName System.Windows.Forms
 
+function  New-Project{ 
+    param (
+        [string] $project_name
+    )
+    Write-Host "$project_name repo will be updated."
+
+    # Get Repos folder
+    $repo_folder = Resolve-Path '../'
+    $new_folder = "$repo_folder/$project_name"
+    $res
+        # Create new folder
+    if (-not (Test-Path -Path $new_folder)) {
+        # New-Item -ItemType Directory -Path $new_folder | Out-Null
+        # $res =  $project_name
+        $res = "$project_name repo not found"
+        Write-Host "New-Project aborted"
+    }
+    else {
+        $res =  $project_name
+    }
+    # Copy Files
+    # set params for Copy-Item
+    if ($res -eq  $project_name){
+        $src_files = Resolve-Path './*'
+        $src_folders = Resolve-Path './'
+        $dest = $new_folder
+        $excl = "InnovConfig"
+        $exclr = @('*.xlsx','*.git')
+        # copy root files
+        Copy-Item -Force $src_files -Destination $dest -Exclude $exclr
+        # copy folders excl InnovConfig
+        Get-ChildItem $src_folders -Directory `
+        | Where-Object { $_.Name -notin $excl } `
+        | Copy-Item -Force -Recurse   -Destination $dest
+        # delete InnovConfig in dest
+        Remove-Item  -Path ($dest + "/InnovConfig")
+    }
+   return $res
+}
 
 function Set-AutoTestOn{
     $InnovConfigSession['auto_test'] = $true
@@ -55,9 +94,12 @@ function ConvertFrom-SecureToPlain {
 }
 
 function Read-MasterConfig {
+    param (
+        [string] $master_config_loc
+    )
     # Read configuration xml
     $machine =  $env:computername
-    [xml] $master_config = get-content "Master_Config.xml"
+    [xml] $master_config = get-content  $master_config_loc
     $base_url = $master_config.selectSingleNode("config/machine[@name='$machine']/innovator_url").'#text'
     $InnovConfigSession['innov_db']  =  $master_config.selectSingleNode("config/machine[@name='$machine']/database_name").'#text'
     $InnovConfigSession['innov_base_url'] = $base_url
@@ -74,26 +116,11 @@ function Restore-Database {
 
     Restart-Service -Force 'W3SVC' 
     Restart-Service -Force  $sql_service
-    # Adapted from example 6 at https://learn.microsoft.com/en-us/powershell/module/sqlserver/restore-sqldatabase?
-    $sqlLogicalFN =@"
-SELECT  f.name LogicalName
-FROM sys.master_files f
-INNER JOIN sys.databases d ON d.database_id = f.database_id
-where d.name ='DSSASCM' and f.type_desc ='@ftype'
-"@
-        $sql_qry1  = $sqlLogicalFN.Replace("@ftype","Rows")
-        $mdf_name  = Invoke-Sqlcmd -ServerInstance $instance  -Database $db -Query $sql_qry1
-        $sql_qry1  = $sqlLogicalFN.Replace("@ftype","Log")
-        $logf_name = Invoke-Sqlcmd -ServerInstance $instance  -Database $db -Query $sql_qry1
-    
-    $RelocateData = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile($mdf_name,  "C:\Data\$db.mdf")
-    $RelocateLog  = New-Object Microsoft.SqlServer.Management.Smo.RelocateFile($logf_name, "C:\Data\$db.ldf")
 
     Restore-SqlDatabase `
         -ServerInstance $InnovConfigSession['sql_instance'] `
         -Database $InnovConfigSession['innov_db'] `
         -BackupFile $InnovConfigSession['sql_bak'] `
-        -RelocateFile @($RelocateData,$RelocateLog) `
         -ReplaceDatabase
     Write-Host "Restore Completed"
     Write-Host -ForegroundColor Yellow "Ignore 'Restoring % Completed' msg. Not suppressed yet."

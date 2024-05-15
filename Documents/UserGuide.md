@@ -1,10 +1,12 @@
-# InnovConfig Module Guide
+# InnovConfig Module User Guide
 
 The purpose of this module is to help Aras Practitioners collaborate and configure Innovator in a git repository, so that configurations can be deployed to any instance from source control.
 
 It includes the use of Pester (Powershell Tester) for automated testing of the module itself, and establishes a pattern of using Pester for testing of configurations.
 
 The modules cmdlets are intended to streamline the process for using AML and Import/Export utilites as follows. Script steps are numbered with user tasks in between.
+
+See Documents\SetupGuide.md
 
 ## Summary
 
@@ -83,3 +85,4 @@ to force focus to Terminal. This funky code needs to be called twice to produce 
 1. Comments including /// TODO indicate planned improvements in scripts
 1. Excel report needs formatting column widths, filter and freeze top row
 1. Configuration Report in Excel has new code. Please report any Items that should be in the report but are not, and any other issues.
+1. Restore-DB requires Master_Config .bak file to have .mdf and .ldf filenames matching db name. This can be overcome using -RelocateFile paramete. The logical file must be known and the case where mdf and ldf files are on different drives accommodated. The work has not been done yet.

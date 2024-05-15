@@ -1,7 +1,7 @@
 # InnovConfig
 
-See [InnovConfigGuide](./Documents/InnovConfigGuide.md)
+This repo is a Powershell Module under construction. Its purpose is to help Aras Practitioners collaborate and configure Innovator in a git repository. See [User Guide](Documents\UserGuide.md)
 
-This repo is intended to be copied or forked so that the Powershell Module in \InnovConfig can be used in multiple repos, with Get-Module referring to a file location,  while InnovConfig is developed.
+The Module can be used for multiple projects set up with steps in the [Setup Guide](Documents\SetupGuide.md).
 
-The folder structure is a pattern for repos using InnovConfig. To avoid git ignoring empty folders there are empty text files, Empty.txt. See [RepoFolderStructure](./Documents\RepoFolderStructure.md).
+It includes the use of automated tests with Pester (Powershell Tester), see [AutoTest Guide](Documents\AutoTestGuide.md).
