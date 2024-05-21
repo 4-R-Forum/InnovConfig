@@ -3,7 +3,7 @@
 <!-- SAMPLE CONFIG for machine
 <machine name="ABCDE">
 	<innovator_url>http://localhost/InnovatorR27/</innovator_url>
-	<database_name>WBI</database_name>
+	<database_name>DB</database_name>
 	<backup_folder>C:\InnovatorR27\InnovatorBackup</backup_folder> 
 	<installation_folder>C:\InnovatorR27</installation_folder> 
 	<sql_service>MSSQL$SQL2019</sql_service> 

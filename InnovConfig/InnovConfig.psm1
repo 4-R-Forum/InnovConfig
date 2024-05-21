@@ -18,8 +18,8 @@ $Session = [ordered]@{
     sql_bak         = $null # location of baseline backup     
     sql_user        = $null # sql user, eg sa or innovator
     sql_pw          = $null # password for SQL login
-    cr_templ_loc    = '.\InnovConfig\ConfigReport-Template.sql' # relative location of Config Report Template
-    crr_templ_loc   = '.\InnovConfig\ConfigReport-Rel-Template.sql' # relative location of Config Report Template
+    cr_templ_loc    = '\InnovConfig\InnovConfig\ConfigReport-Template.sql' # relative location of Config Report Template
+    crr_templ_loc   = '\InnovConfig\InnovConfig\ConfigReport-Rel-Template.sql' # relative location of Config Report Template
     export_folder   = $null # folder for exported changes, for merge to AML-Packages by user
     auto_test       = $false
 
@@ -175,8 +175,9 @@ function Export-ConfigReport{
     $compare_date = Get-Content -Path ./Temp/compare_date.txt
     $sql_instance = $InnovConfigSession['sql_instance']
     $innov_db = $InnovConfigSession['innov_db']
-    $cr_templ_loc =  Resolve-Path $InnovConfigSession['cr_templ_loc']
-    $crr_templ_loc =  Resolve-Path $InnovConfigSession['crr_templ_loc']
+    $repos_folder = Resolve-Path '../'
+    $cr_templ_loc =  $repos_folder.Path + $InnovConfigSession['cr_templ_loc']
+    $crr_templ_loc = $repos_folder.Path + $InnovConfigSession['crr_templ_loc']
     $config_report = @()
 
     [string] $sql_qry1 = "select instance_data
